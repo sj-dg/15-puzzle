@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { vConfetti } from '@neoconfetti/vue'
 
 const MATRIX_SIZE = 4
 const MATRIX_ARR = [1, 2, 0, 4, 5, 6, 3, 8, 9, 10, 7, 12, 13, 14, 11, 15]
@@ -78,6 +79,7 @@ const reset = () => {
       <button class="bg-gray-300 rounded-md py-2 px-4" @click="reset">Reset</button>
       <p
         class="border border-gray-300 rounded-md grid place-items-center animate-pulse"
+        v-confetti="{ particleCount: 50, force: 0.1 }"
         v-if="hasUserWon"
       >
         You have won 🎉
