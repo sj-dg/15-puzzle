@@ -2,8 +2,10 @@
 import { ref, computed } from 'vue'
 
 const MATRIX_SIZE = 4
+const MATRIX_ARR = [1, 2, 0, 4, 5, 6, 3, 8, 9, 10, 7, 12, 13, 14, 11, 15]
 
-const tilesArr = ref([1, 2, 0, 4, 5, 6, 3, 8, 9, 10, 7, 12, 13, 14, 11, 15])
+const hasUserWon = ref(false)
+const tilesArr = ref([...MATRIX_ARR])
 
 const zeroTilePos = computed(() => tilesArr.value.findIndex((t) => t === 0))
 
@@ -48,22 +50,38 @@ const checkIfUserWon = () => {
     hasWon = hasWon && tilesArr.value[i] === i + 1
   }
   if (hasWon) {
-    alert('Bingo!')
+    hasUserWon.value = true
   }
+}
+
+const reset = () => {
+  hasUserWon.value = false
+  tilesArr.value = MATRIX_ARR
 }
 </script>
 
 <template>
-  <div class="grid grid-cols-4 gap-1 mt-16 max-w-96 mx-auto">
-    <div
-      v-for="(tile, index) in tilesArr"
-      :key="index"
-      class="bg-yellow-200 py-6 px-4 text-center text-xl rounded-md border border-blue-600 cursor-pointer"
-      :class="{ invisible: tile === 0 }"
-      role="button"
-      @click="handleTitleClick(tile, index)"
-    >
-      {{ tile }}
+  <section class="mt-16 max-w-96 mx-auto">
+    <div class="grid grid-cols-4 gap-1">
+      <div
+        v-for="(tile, index) in tilesArr"
+        :key="index"
+        class="bg-yellow-200 py-6 px-4 text-center text-xl rounded-md border border-blue-600 cursor-pointer"
+        :class="{ invisible: tile === 0 }"
+        role="button"
+        @click="handleTitleClick(tile, index)"
+      >
+        {{ tile }}
+      </div>
     </div>
-  </div>
+    <div class="grid grid-cols-2 gap-3 w-full mt-2 rever">
+      <button class="bg-gray-300 rounded-md py-2 px-4" @click="reset">Reset</button>
+      <p
+        class="border border-gray-300 rounded-md grid place-items-center animate-pulse"
+        v-if="hasUserWon"
+      >
+        You have won 🎉
+      </p>
+    </div>
+  </section>
 </template>
