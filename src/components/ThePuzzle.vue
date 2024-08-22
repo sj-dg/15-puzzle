@@ -7,37 +7,34 @@ const tilesArr = ref([1, 2, 0, 4, 5, 6, 3, 8, 9, 10, 7, 12, 13, 14, 11, 15])
 
 const zeroTilePos = computed(() => tilesArr.value.findIndex((t) => t === 0))
 
-const coordinates = computed(() => {
+const matrixCoordinates = computed(() => {
   return tilesArr.value.map((_, i) => {
     return [Math.floor(i / MATRIX_SIZE), i % MATRIX_SIZE]
   })
 })
 
 const shouldNotMove = (tileIndex: number) => {
-  const tileCoordinates = coordinates.value[tileIndex]
-  const zeroTileCoordinates = coordinates.value[zeroTilePos.value]
+  const tileCoordinates = matrixCoordinates.value[tileIndex]
+  const zeroTileCoordinates = matrixCoordinates.value[zeroTilePos.value]
 
   const xDiff = Math.abs(tileCoordinates[0] - zeroTileCoordinates[0])
   const yDiff = Math.abs(tileCoordinates[1] - zeroTileCoordinates[1])
+
+  const hasBothCoordsChanged = xDiff > 0 && yDiff > 0
+
+  if (hasBothCoordsChanged) return true
 
   return xDiff > 1 || yDiff > 1
 }
 
 const handleTitleClick = (tile: number, tileIndex: number) => {
   if (tile === 0) return
-
-  const isMovingBack = tileIndex - 1 === zeroTilePos.value
-  const isMovingForward = tileIndex + 1 === zeroTilePos.value
-  const isMovingUp = tileIndex - MATRIX_SIZE === zeroTilePos.value
-  const isMovingDown = tileIndex + MATRIX_SIZE === zeroTilePos.value
-
-  if (isMovingBack || isMovingForward || isMovingUp || isMovingDown) moveZeroTile(tileIndex)
-
+  if (shouldNotMove(tileIndex)) return
+  replaceTiles(tileIndex)
   checkIfUserWon()
 }
 
-const moveZeroTile = async (tileIndex: number) => {
-  if (shouldNotMove(tileIndex)) return
+const replaceTiles = async (tileIndex: number) => {
   const temp = tilesArr.value[tileIndex]
   const zeroIndex = zeroTilePos.value
   tilesArr.value.splice(tileIndex, 1)
